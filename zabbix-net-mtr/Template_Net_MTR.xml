@@ -29,7 +29,7 @@ https://packages.debian.org/stable/mtr-tiny</description>
                     <uuid>f7ab415867dd44669853cbe4989fdef8</uuid>
                     <name>MTR Trace Master</name>
                     <type>EXTERNAL</type>
-                    <key>mtr.sh[{HOST.IP}]</key>
+                    <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
                     <history>0</history>
                     <value_type>TEXT</value_type>
                     <trends>0</trends>
@@ -78,7 +78,7 @@ https://packages.debian.org/stable/mtr-tiny</description>
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>mtr.sh[{HOST.IP}]</key>
+                                <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
                             </master_item>
                             <tags>
                                 <tag>
@@ -88,29 +88,30 @@ https://packages.debian.org/stable/mtr-tiny</description>
                             </tags>
                         </item_prototype>
                         <item_prototype>
-                            <uuid>334c9585d9e34587913bf8d77620e4ef</uuid>
-                            <name>MTR Hop - State - {#HOP_ID}: {#HOP_NAME} ({#HOP_IP})</name>
+                            <uuid>fa8857769b6048adb4cbc2e4d0b7e42b</uuid>
+                            <name>MTR Hop - Best RTT(ms) - {#HOP_ID}: {#HOP_NAME} ({#HOP_IP})</name>
                             <type>DEPENDENT</type>
-                            <key>mtr.hop.host[{#HOP_IP}]</key>
+                            <key>mtr.hop.best[{#HOP_IP}]</key>
                             <delay>0</delay>
-                            <history>7d</history>
-                            <value_type>TEXT</value_type>
-                            <trends>0</trends>
+                            <history>14d</history>
+                            <value_type>FLOAT</value_type>
+                            <trends>180d</trends>
+                            <units>!ms</units>
                             <preprocessing>
                                 <step>
                                     <type>JSONPATH</type>
                                     <parameters>
-                                        <parameter>$.[?(@.count == &quot;{#HOP_ID}&quot;)].host.first()</parameter>
+                                        <parameter>$.[?(@.count == &quot;{#HOP_ID}&quot;)][&quot;Best&quot;].first()</parameter>
                                     </parameters>
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>mtr.sh[{HOST.IP}]</key>
+                                <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
                             </master_item>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
-                                    <value>MTR Hosts</value>
+                                    <value>MTR Average RTT(ms)</value>
                                 </tag>
                             </tags>
                         </item_prototype>
@@ -133,7 +134,7 @@ https://packages.debian.org/stable/mtr-tiny</description>
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>mtr.sh[{HOST.IP}]</key>
+                                <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
                             </master_item>
                             <tags>
                                 <tag>
@@ -142,9 +143,119 @@ https://packages.debian.org/stable/mtr-tiny</description>
                                 </tag>
                             </tags>
                         </item_prototype>
+                        <item_prototype>
+                            <uuid>23fc2f1f0ac446a08cac97db993cda56</uuid>
+                            <name>MTR Hop - StDev RTT(ms) - {#HOP_ID}: {#HOP_NAME} ({#HOP_IP})</name>
+                            <type>DEPENDENT</type>
+                            <key>mtr.hop.stdev[{#HOP_IP}]</key>
+                            <delay>0</delay>
+                            <history>14d</history>
+                            <value_type>FLOAT</value_type>
+                            <trends>180d</trends>
+                            <units>!ms</units>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <parameters>
+                                        <parameter>$.[?(@.count == &quot;{#HOP_ID}&quot;)][&quot;StDev&quot;].first()</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
+                            </master_item>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MTR Average RTT(ms)</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>8ede2e86349248ef88e762b954c09def</uuid>
+                            <name>MTR Hop - Worst RTT(ms) - {#HOP_ID}: {#HOP_NAME} ({#HOP_IP})</name>
+                            <type>DEPENDENT</type>
+                            <key>mtr.hop.wrst[{#HOP_IP}]</key>
+                            <delay>0</delay>
+                            <history>14d</history>
+                            <value_type>FLOAT</value_type>
+                            <trends>180d</trends>
+                            <units>!ms</units>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <parameters>
+                                        <parameter>$.[?(@.count == &quot;{#HOP_ID}&quot;)][&quot;Wrst&quot;].first()</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
+                            </master_item>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MTR Average RTT(ms)</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
                     </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>02e74eeec1514d68961fdc436cd24973</uuid>
+                            <name>MTR Hop - {#HOP_ID}: {#HOP_NAME} ({#HOP_IP})</name>
+                            <show_work_period>NO</show_work_period>
+                            <show_triggers>NO</show_triggers>
+                            <graph_items>
+                                <graph_item>
+                                    <color>199C0D</color>
+                                    <calc_fnc>MIN</calc_fnc>
+                                    <item>
+                                        <host>Template Net MTR - Per-Hop</host>
+                                        <key>mtr.hop.avg[{#HOP_IP}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>F63100</color>
+                                    <calc_fnc>MIN</calc_fnc>
+                                    <item>
+                                        <host>Template Net MTR - Per-Hop</host>
+                                        <key>mtr.hop.best[{#HOP_IP}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>2774A4</color>
+                                    <calc_fnc>MIN</calc_fnc>
+                                    <item>
+                                        <host>Template Net MTR - Per-Hop</host>
+                                        <key>mtr.hop.loss[{#HOP_IP}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>F7941D</color>
+                                    <calc_fnc>MIN</calc_fnc>
+                                    <item>
+                                        <host>Template Net MTR - Per-Hop</host>
+                                        <key>mtr.hop.stdev[{#HOP_IP}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>4</sortorder>
+                                    <color>FC6EA3</color>
+                                    <calc_fnc>MIN</calc_fnc>
+                                    <item>
+                                        <host>Template Net MTR - Per-Hop</host>
+                                        <key>mtr.hop.wrst[{#HOP_IP}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
                     <master_item>
-                        <key>mtr.sh[{HOST.IP}]</key>
+                        <key>mtr.sh[{$FIRST_TTL} {HOST.IP}]</key>
                     </master_item>
                     <lld_macro_paths>
                         <lld_macro_path>
@@ -166,6 +277,139 @@ https://packages.debian.org/stable/mtr-tiny</description>
                     </lld_macro_paths>
                 </discovery_rule>
             </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$FIRST_TTL}</macro>
+                    <value>1</value>
+                </macro>
+            </macros>
+            <dashboards>
+                <dashboard>
+                    <uuid>e9c547e22e4f40e685f05d21568c622c</uuid>
+                    <name>MTR Dashboard</name>
+                    <pages>
+                        <page>
+                            <widgets>
+                                <widget>
+                                    <type>svggraph</type>
+                                    <name>Average RTT</name>
+                                    <width>72</width>
+                                    <height>6</height>
+                                    <fields>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.color</name>
+                                            <value>0040FF</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.items.0</name>
+                                            <value>MTR Hop - Average RTT*</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>IIZZO</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>righty</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                                <widget>
+                                    <type>svggraph</type>
+                                    <name>Best RTT</name>
+                                    <y>6</y>
+                                    <width>72</width>
+                                    <height>6</height>
+                                    <fields>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.color</name>
+                                            <value>2E7D32</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.items.0</name>
+                                            <value>MTR Hop - Best RTT*</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>KGGHT</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>righty</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                                <widget>
+                                    <type>svggraph</type>
+                                    <name>Worst RTT</name>
+                                    <y>12</y>
+                                    <width>72</width>
+                                    <height>6</height>
+                                    <fields>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.color</name>
+                                            <value>FF0000</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.items.0</name>
+                                            <value>MTR Hop - Worst RTT*</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>BKWTE</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>righty</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                                <widget>
+                                    <type>svggraph</type>
+                                    <name>Standard Deviation</name>
+                                    <y>18</y>
+                                    <width>72</width>
+                                    <height>6</height>
+                                    <fields>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.color</name>
+                                            <value>CC6600</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>ds.0.items.0</name>
+                                            <value>MTR Hop - StDev*</value>
+                                        </field>
+                                        <field>
+                                            <type>STRING</type>
+                                            <name>reference</name>
+                                            <value>JCYIP</value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>righty</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                            </widgets>
+                        </page>
+                    </pages>
+                </dashboard>
+            </dashboards>
         </template>
     </templates>
 </zabbix_export>

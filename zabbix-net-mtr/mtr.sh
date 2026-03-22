@@ -1,7 +1,8 @@
 #!/bin/bash
 
 IP=$1
-mtr  -r -c3 -b -j $IP | jq '
+FIRST_TTL=$2
+mtr  -r -c3 -b -j -f $FIRST_TTL $IP | jq '
 .report.hubs |= map(
   if (.host | test("\\(")) then
     . + {
