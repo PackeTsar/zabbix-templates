@@ -3,7 +3,7 @@
 ## Introduction
 
 A Zabbix template for mtr (My traceroute). It uses all the new features from Zabbix 4.4 and 5.0 with Master Items, JSONpath processing and Dependent items.
-This template was built on Zabbix 5.0.x and Debian 9 & 10 amd64 with [mtr-tiny](https://packages.debian.org/stable/mtr-tiny).
+This template was built on Zabbix 7.0 and Ubuntu24 amd64 with [mtr-tiny](https://packages.debian.org/stable/mtr-tiny) and the built in `jq` utility.
 
 ## Installation
 
@@ -15,9 +15,13 @@ This template was built on Zabbix 5.0.x and Debian 9 & 10 amd64 with [mtr-tiny](
 ## Notes
 
 These files and templates were tested and created on Zabbix 4.4 & 5.0 and Debian Linux 9 & 10 amd64 with the package [mtr-tiny](https://packages.debian.org/stable/mtr-tiny).
-The XML file provided is exported from Zabbix 5.0.3.
+The XML file provided is exported from Zabbix 7.0.23.
 
-This template creates a Master item, which executes the script and receives the JSON output. From there on we have a Low-Level-Discovery rule, that discovery three item prototypes:
+This template creates a Master item, which executes the script and receives the JSON output. 
+
+> Note: By default, `mtr` combines the IP address and DNS names into a single `host` value in the JSON output. The `mtr.sh` script uses the `jq` utility to split the IP address and DNS names into their own values. These separated values get picked up by the Zabbix discovery rule for item naming.
+
+From there on we have a Low-Level-Discovery rule, that discovery three item prototypes:
 
 - Name of each Hop
 - Average RTT(ms) of each Hop
@@ -34,3 +38,4 @@ Parts of this Template are directly related to [a reddit discussion](https://www
 ## Changelog
 
 - 01 October 2020: initial commit.
+- 22 March 2026: Added DNS name data into MTR script output and item naming.
